@@ -16,4 +16,14 @@ I, E and R populations derived for Canada and Italy with error margins of 3 stan
 
 All examples have predictions for 5 days, which explained the rise in uncertainty in the last few days. All curves have been smoothed with a window of 10 days for plots and UKF (to stabilize the algorithm). Also, all UKF parameters have been fine-tune by hand.
 
-Last update May 11th 2020.
+These plots were done for all dates until May 11th 2020.
+
+Once, these days passed, the plots are :
+
+![PLOT OF CANADA](canada_after.png)
+
+![PLOT OF CANADA](italie_after.png)
+
+We see that our predictions were quite good actually for the Infected. For the Recovered, we fixed the recovery rate to the literature value, which might not be the best. We might modelised it also like the R0.
+
+Last update May 16th 2020.

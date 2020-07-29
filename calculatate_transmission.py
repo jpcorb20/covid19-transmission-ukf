@@ -25,9 +25,9 @@ def preprocess_data(data_country):
     """
     global DATA_SMOOTHING_WINDOW, CASES_CONSIDERED
     return [(c - (r + d), r + d) for c, d, r
-            in zip(smooth(data_country['Cases'], DATA_SMOOTHING_WINDOW),
-                   smooth(data_country['Dead'], DATA_SMOOTHING_WINDOW),
-                   smooth(data_country['Recovered'], DATA_SMOOTHING_WINDOW))
+            in zip(data_country['Cases'].rolling(DATA_SMOOTHING_WINDOW).mean(),
+                   data_country['Dead'].rolling(DATA_SMOOTHING_WINDOW).mean(),
+                   data_country['Recovered'].rolling(DATA_SMOOTHING_WINDOW).mean())
             if c > CASES_CONSIDERED]
 
 
@@ -70,7 +70,7 @@ def fx(x, delta_t):
     x[7] = dR
     x[9] = ddR0
 
-    return x + np.array([dS, 0, dE, 0, dI, 0, dR, 0, dR0, ddR0, 0, 0], dtype=float)
+    return x + np.array([dS, 0, dE, 0, dI, 0, dR if dR > 0 else 0, 0, dR0, ddR0, 0, 0], dtype=float)
 
 
 def hx(x):
@@ -85,16 +85,17 @@ def hx(x):
 # My data is using french country names.
 POPULATIONS = {
     "Canada":   37.7e6,
-    "Portugal": 10.2e6,
-    "France":   65.2e6,
+    # "Québec": 8.4e6,
+    # "Portugal": 10.2e6,
+    # "France":   65.2e6,
     "Italie":   60.5e6,
-    "Espagne":  46.8e6,
-    "Allemagne": 88e6,
-    "États-Unis": 330e6
+    # "Espagne":  46.8e6,
+    # "Allemagne": 88e6,
+    # "États-Unis": 330e6
 }
 
 CASES_CONSIDERED = 30
-DATA_SMOOTHING_WINDOW = 10
+DATA_SMOOTHING_WINDOW = 1
 FORECAST_DAYS = 5
 AVERAGE_R0_WINDOW = 7
 SIGMA_CONSIDERED = 3
@@ -186,12 +187,12 @@ if __name__ == '__main__':
         R = smooth([a[0][6] for a in r], DATA_SMOOTHING_WINDOW)
         sR = [SIGMA_CONSIDERED * np.sqrt(a[1][6, 6]) for a in r]
 
-        E = smooth([a[0][2] for a in r], DATA_SMOOTHING_WINDOW)
-        sE = [SIGMA_CONSIDERED * np.sqrt(a[1][2, 2]) for a in r]
+        # E = smooth([a[0][2] for a in r], DATA_SMOOTHING_WINDOW)
+        # sE = [SIGMA_CONSIDERED * np.sqrt(a[1][2, 2]) for a in r]
 
         plt.errorbar(x=xs, y=I, yerr=sI)
         plt.errorbar(x=xs, y=R, yerr=sR)
-        plt.errorbar(x=xs, y=E, yerr=sE)
+        # plt.errorbar(x=xs, y=E, yerr=sE)
 
         plt.title(t)
         plt.xlabel("Days from 30 first cases")
